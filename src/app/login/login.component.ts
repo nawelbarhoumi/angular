@@ -7,30 +7,39 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+  submitted = false;
 
+  loginForm: FormGroup = new FormGroup({
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required, Validators.minLength(8)]),
 
-  profileForm = new FormGroup({
-    firstName: new FormControl(''),
-    lastName: new FormControl(''),
-    password: new FormControl(''),
-  });
-  emailFormControl = new FormControl('', [
-    Validators.required,
-    Validators.email,
-  ]);
+  })
   constructor() { }
 
   ngOnInit(): void {
-    console.log("bonjour");
     
   }
 
-  affichage(){
-    alert('bonjour')
-  }
+  login()
+  {
+    this.submitted = true;
+    if(this.loginForm.invalid)
+    {
+      return ;
+    }
 
-  fullName(){
-    console.log(this.profileForm.controls['firstName'].value + this.profileForm.controls['lastName'].value);
+    let users = JSON.parse(localStorage.getItem('users') || '[]');
+    let found = users.find(x=> x.email === this.loginForm.value.email && x.password === this.loginForm.value.password);
+    
+    if(found !== undefined)
+    {
+      localStorage.setItem('connected-user', JSON.stringify(found));
+      this.route.navigate(['/todo-list']);
+      // this.route.navigateByUrl('/todo-list');
+    }
+    else{
+      alert("SVP vérifier votre email et password?")
+    }
     
   }
 
